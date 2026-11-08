@@ -9,8 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Extract project
+        run: unzip -o RabbitMailAI-Project.zip -d .
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -18,19 +21,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK
+      - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Extract project ZIP
-        run: unzip -o RabbitMailAI-Project.zip -d .
-
       - name: Build APK
-        run: |
-          chmod +x RabbitMailAI/gradlew
-          ./RabbitMailAI/gradlew -p RabbitMailAI assembleDebug
+        run: gradle -p RabbitMailAI assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
