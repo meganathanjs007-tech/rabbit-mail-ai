@@ -1,0 +1,40 @@
+
+name: Build Rabbit Mail AI APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract project ZIP
+        run: unzip -o RabbitMailAI-Project.zip -d .
+
+      - name: Build APK
+        run: |
+          chmod +x RabbitMailAI/gradlew
+          ./RabbitMailAI/gradlew -p RabbitMailAI assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rabbit-Mail-AI-APK
+          path: RabbitMailAI/app/build/outputs/apk/debug/app-debug.apk
+          
